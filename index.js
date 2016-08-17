@@ -19,15 +19,11 @@ function renameFile(app) {
     }
 
     file.isRenamed = true;
-    var data = extend({}, file.data);
-    file.cwd = app.options.dest || app.cwd || process.cwd();
-    file.base = file.cwd;
-
-    file.path = path.join(file.base, file.basename);
     file.rename = function(key, val) {
       return rename(file, key, val);
     };
 
+    var data = extend({}, file.data);
     if (data.rename === false) {
       next(null, file);
       return;

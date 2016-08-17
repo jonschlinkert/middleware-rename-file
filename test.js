@@ -43,7 +43,7 @@ describe('middleware-rename-file', function() {
 
       app.render('dirname.md', function(err, view) {
         if (err) return cb(err);
-        assert.equal(view.dirname, path.resolve('foo'));
+        assert.equal(view.dirname, path.resolve('fixtures/foo'));
         cb();
       });
     });
@@ -102,7 +102,7 @@ describe('middleware-rename-file', function() {
 
       app.render('dirname.md', function(err, view) {
         if (err) return cb(err);
-        assert.equal(view.dirname, path.resolve('foo'));
+        assert.equal(view.dirname, path.resolve('fixtures/foo'));
         cb();
       });
     });
