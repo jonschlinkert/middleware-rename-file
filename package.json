@@ -10,9 +10,7 @@
   },
   "license": "MIT",
   "files": [
-    "index.js",
-    "LICENSE",
-    "README.md"
+    "index.js"
   ],
   "main": "index.js",
   "engines": {
@@ -23,22 +21,29 @@
   },
   "dependencies": {
     "extend-shallow": "^2.0.1",
-    "is-valid-app": "^0.2.0",
-    "isobject": "^2.1.0"
+    "isobject": "^3.0.0"
   },
   "devDependencies": {
     "assemble-loader": "^0.6.1",
     "base-fs": "^0.3.5",
     "engine-base": "^0.1.2",
-    "gulp-format-md": "^0.1.9",
-    "mocha": "^3.0.0",
-    "parser-front-matter": "^1.4.2",
-    "templates": "^0.25.0"
+    "gulp-format-md": "^0.1.11",
+    "mocha": "^3.2.0",
+    "parser-front-matter": "^1.6.2",
+    "templates": "^1.1.1"
   },
   "keywords": [
+    "assemble",
     "file",
+    "front-matter",
+    "generate",
     "middleware",
-    "rename"
+    "rename",
+    "rewrite",
+    "template",
+    "templates",
+    "verb",
+    "vinyl"
   ],
   "verb": {
     "toc": false,
@@ -49,19 +54,24 @@
     "plugins": [
       "gulp-format-md"
     ],
-    "lint": {
-      "reflinks": true
-    },
     "related": {
-      "list": []
+      "list": [
+        "templates",
+        "verb",
+        "assemble",
+        "generate",
+        "update"
+      ]
     },
     "reflinks": [
       "assemble",
       "generate",
       "templates",
       "update",
-      "verb",
-      "verb-generate-readme"
-    ]
+      "verb"
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }

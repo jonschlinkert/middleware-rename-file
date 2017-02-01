@@ -2,18 +2,11 @@
 
 var path = require('path');
 var extend = require('extend-shallow');
-var isValid = require('is-valid-app');
 var isObject = require('isobject');
 
-function middleware(app) {
-  if (!isValid(app, 'middleware-rename-file')) return;
-  app.onLoad(/./, renameFile(app));
-  return middleware;
-};
-
-function renameFile(app) {
+module.exports = function(fn) {
   return function(file, next) {
-    if (file.isRenamed) {
+    if (file.isRenamed || !filter(file, fn)) {
       next(null, file);
       return;
     }
@@ -37,10 +30,11 @@ function renameFile(app) {
 
     next(null, file);
   };
-}
+};
 
 function rename(file, key, val) {
   switch (key) {
+    case 'dir':
     case 'dirname':
       file.dirname = path.resolve(file.base, val);
       break;
@@ -50,9 +44,11 @@ function rename(file, key, val) {
     case 'basename':
       file.basename = val;
       break;
+    case 'name':
     case 'stem':
       file.stem = val;
       break;
+    case 'ext':
     case 'extname':
       if (val && val.charAt(0) !== '.') {
         val = '.' + val;
@@ -68,9 +64,18 @@ function rename(file, key, val) {
 }
 
 /**
- * Expose middleware
+ * Expose rename function
  */
 
-middleware.rename = rename;
-middleware.renameFile = renameFile;
-module.exports = middleware;
+module.exports.rename = rename;
+
+/**
+ * Filter files
+ */
+
+function filter(file, fn) {
+  if (typeof fn === 'function') {
+    return fn(file);
+  }
+  return true;
+}

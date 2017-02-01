@@ -5,8 +5,8 @@ var path = require('path');
 var assert = require('assert');
 var matter = require('parser-front-matter');
 var loader = require('assemble-loader');
-var vfs = require('base-fs');
 var templates = require('templates');
+var vfs = require('base-fs');
 var middleware = require('./');
 var app;
 
@@ -30,15 +30,11 @@ describe('middleware-rename-file', function() {
     it('should expose a `.rename` method', function() {
       assert.equal(typeof middleware, 'function');
     });
-
-    it('should expose a `.renameFile` method', function() {
-      assert.equal(typeof middleware, 'function');
-    });
   });
 
   describe('plugin/middleware', function() {
     it('should rename a file based on front matter', function(cb) {
-      app.use(middleware);
+      app.onLoad(/\.md$/, middleware());
       app.pages('fixtures/*.md', {cwd: __dirname});
 
       app.render('dirname.md', function(err, view) {
@@ -49,7 +45,7 @@ describe('middleware-rename-file', function() {
     });
 
     it('should rename a file based on file.data', function(cb) {
-      app.use(middleware);
+      app.onLoad(/\.md$/, middleware());
       var view = {
         content: '...',
         data: {
@@ -72,7 +68,7 @@ describe('middleware-rename-file', function() {
     });
 
     it('should support an empty string for extname', function(cb) {
-      app.use(middleware);
+      app.onLoad(/\.md$/, middleware());
       var view = {
         content: '...',
         data: {
@@ -96,8 +92,8 @@ describe('middleware-rename-file', function() {
   });
 
   describe('.renameFile', function() {
-    it('should rename a file based on front matter', function(cb) {
-      app.onLoad(/\.md$/, middleware.renameFile(app));
+    it('should rename file dirname based on front matter', function(cb) {
+      app.onLoad(/\.md$/, middleware(app));
       app.pages('fixtures/*.md', {cwd: __dirname});
 
       app.render('dirname.md', function(err, view) {
@@ -107,8 +103,22 @@ describe('middleware-rename-file', function() {
       });
     });
 
+    it('should rename file basename based on front matter', function(cb) {
+      app.onLoad(/\.md$/, middleware(app));
+      app.pages('fixtures/*.md', {cwd: __dirname});
+
+      var page = app.pages.getView('basename.md');
+      console.log(page)
+      cb();
+      // app.render('basename.md', function(err, view) {
+      //   if (err) return cb(err);
+      //   // assert.equal(view.dirname, path.resolve('fixtures/foo'));
+      //   cb();
+      // });
+    });
+
     it('should rename a file based on file.data', function(cb) {
-      app.onLoad(/\.md$/, middleware.renameFile(app));
+      app.onLoad(/\.md$/, middleware(app));
       var view = {
         content: '...',
         data: {
@@ -120,7 +130,7 @@ describe('middleware-rename-file', function() {
         }
       };
 
-      app.page('basename.md', view, function(err, page) {
+      app.page('foo.md', view, function(err, page) {
         if (err) return cb(err);
         assert.equal(page.dirname, path.resolve('whatever'));
         assert.equal(page.stem, 'foo');
@@ -131,7 +141,7 @@ describe('middleware-rename-file', function() {
     });
 
     it('should support an empty string for extname', function(cb) {
-      app.onLoad(/\.md$/, middleware.renameFile(app));
+      app.onLoad(/\.md$/, middleware(app));
       var view = {
         content: '...',
         data: {
