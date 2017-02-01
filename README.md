@@ -1,6 +1,6 @@
-# middleware-rename-file [![NPM version](https://img.shields.io/npm/v/middleware-rename-file.svg?style=flat)](https://www.npmjs.com/package/middleware-rename-file) [![NPM downloads](https://img.shields.io/npm/dm/middleware-rename-file.svg?style=flat)](https://npmjs.org/package/middleware-rename-file) [![Build Status](https://img.shields.io/travis/jonschlinkert/middleware-rename-file.svg?style=flat)](https://travis-ci.org/jonschlinkert/middleware-rename-file)
+# middleware-rename-file [![NPM version](https://img.shields.io/npm/v/middleware-rename-file.svg?style=flat)](https://www.npmjs.com/package/middleware-rename-file) [![NPM monthly downloads](https://img.shields.io/npm/dm/middleware-rename-file.svg?style=flat)](https://npmjs.org/package/middleware-rename-file)  [![NPM total downloads](https://img.shields.io/npm/dt/middleware-rename-file.svg?style=flat)](https://npmjs.org/package/middleware-rename-file) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/middleware-rename-file.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/middleware-rename-file)
 
-Middleware for renaming views based on front-matter properties.
+> Middleware for renaming views based on front-matter properties.
 
 ## Install
 
@@ -10,23 +10,72 @@ Install with [npm](https://www.npmjs.com/):
 $ npm install --save middleware-rename-file
 ```
 
+## How it works
+
+You can rename the destination path of a file using properties defined in its front-matter. Any of the path properties on a [vinyl](https://github.com/gulpjs/vinyl) file should work.
+
+**Example**
+
+Given the source file, `scaffolds/layouts/base.hbs`:
+
+```html
+---
+rename:
+  basename: default.hbs
+  dirname: templates
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+  </head>
+  <body>
+    {% body %}
+  </body>
+</html>
+```
+
+The generated destination path would be, `templates/default.hbs`.
+
 ## Usage
 
 This can be used with [assemble](https://github.com/assemble/assemble), [verb](https://github.com/verbose/verb), [generate](https://github.com/generate/generate), [update](https://github.com/update/update) or an other library that is based on [templates](https://github.com/jonschlinkert/templates).
 
 **.onLoad**
 
-The main export is a plugin function that automatically creates an `.onLoad` middleware that will run against every file.
+The main export is a middleware function that should be passed to `.onLoad` to ensure that files are renamed as early in the render cycle as possible (so that when rendering begins, the actual file names are available on the context).
 
 ```js
-var templates = require('templates');
-var app = templates();
-app.use(require('middleware-rename-file'));
+var rename = require('middleware-rename-file');
+var assemble = require('assemble');
+var app = assemble();
+
+app.onLoad(/\.md$/, rename());
 ```
 
-The `.onLoad` stage is used to ensure that files are renamed before rendering, in case file paths need to be on the context at render time.
+In addition to the regex provided to `.onLoad`, you may also optionally pass a filter function to `rename()`:
+
+**Example**
+
+Don't modify a file with the name (stem) `index`:
+
+```js
+app.onLoad(/\.md$/, rename(function(file) {
+  return file.stem !== 'index';
+}));
+```
 
 ## About
+
+### Related projects
+
+* [assemble](https://www.npmjs.com/package/assemble): Get the rocks out of your socks! Assemble makes you fast at creating web projects… [more](https://github.com/assemble/assemble) | [homepage](https://github.com/assemble/assemble "Get the rocks out of your socks! Assemble makes you fast at creating web projects. Assemble is used by thousands of projects for rapid prototyping, creating themes, scaffolds, boilerplates, e-books, UI components, API documentation, blogs, building websit")
+* [generate](https://www.npmjs.com/package/generate): Command line tool and developer framework for scaffolding out new GitHub projects. Generate offers the… [more](https://github.com/generate/generate) | [homepage](https://github.com/generate/generate "Command line tool and developer framework for scaffolding out new GitHub projects. Generate offers the robustness and configurability of Yeoman, the expressiveness and simplicity of Slush, and more powerful flow control and composability than either.")
+* [templates](https://www.npmjs.com/package/templates): System for creating and managing template collections, and rendering templates with any node.js template engine… [more](https://github.com/jonschlinkert/templates) | [homepage](https://github.com/jonschlinkert/templates "System for creating and managing template collections, and rendering templates with any node.js template engine. Can be used as the basis for creating a static site generator or blog framework.")
+* [update](https://www.npmjs.com/package/update): Be scalable! Update is a new, open source developer framework and CLI for automating updates… [more](https://github.com/update/update) | [homepage](https://github.com/update/update "Be scalable! Update is a new, open source developer framework and CLI for automating updates of any kind in code projects.")
+* [verb](https://www.npmjs.com/package/verb): Documentation generator for GitHub projects. Verb is extremely powerful, easy to use, and is used… [more](https://github.com/verbose/verb) | [homepage](https://github.com/verbose/verb "Documentation generator for GitHub projects. Verb is extremely powerful, easy to use, and is used on hundreds of projects of all sizes to generate everything from API docs to readmes.")
 
 ### Contributing
 
@@ -34,20 +83,20 @@ Pull requests and stars are always welcome. For bugs and feature requests, [plea
 
 ### Building docs
 
-_(This document was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme) (a [verb](https://github.com/verbose/verb) generator), please don't edit the readme directly. Any changes to the readme must be made in [.verb.md](.verb.md).)_
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
 
-To generate the readme and API documentation with [verb](https://github.com/verbose/verb):
+To generate the readme, run the following command:
 
 ```sh
-$ npm install -g verb verb-generate-readme && verb
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
 ```
 
 ### Running tests
 
-Install dev dependencies:
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
 
 ```sh
-$ npm install -d && npm test
+$ npm install && npm test
 ```
 
 ### Author
@@ -55,13 +104,13 @@ $ npm install -d && npm test
 **Jon Schlinkert**
 
 * [github/jonschlinkert](https://github.com/jonschlinkert)
-* [twitter/jonschlinkert](http://twitter.com/jonschlinkert)
+* [twitter/jonschlinkert](https://twitter.com/jonschlinkert)
 
 ### License
 
-Copyright © 2016, [Jon Schlinkert](https://github.com/jonschlinkert).
-Released under the [MIT license](https://github.com/jonschlinkert/middleware-rename-file/blob/master/LICENSE).
+Copyright © 2017, [Jon Schlinkert](https://github.com/jonschlinkert).
+MIT
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.1.30, on August 17, 2016._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.4.2, on February 01, 2017._
